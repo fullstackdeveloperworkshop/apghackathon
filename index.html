@@ -1,1 +1,1089 @@
-Hii
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APG Hackathon - DEMO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+        }
+        #appContainer {
+            height: 100vh;
+        }
+        #mainScreen {
+            overflow-y: auto;
+        }
+        .main-screen-fade { transition: opacity 0.3s ease-in-out; }
+        .popup-fade { transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; }
+        .popup-hidden { opacity: 0; transform: translateY(20px); pointer-events: none; display: none; }
+        .popup-visible { opacity: 1; transform: translateY(0); pointer-events: auto; display: fixed; }
+        .element-hover-outline { outline: 2px solid #3b82f6 !important; outline-offset: 2px !important; border-radius: 5px !important; cursor: crosshair !important; box-shadow: 0 0 10px #3b82f6 !important; }
+        .element-running-highlight { outline: 3px solid #10b981 !important; outline-offset: 3px !important; border-radius: 5px !important; box-shadow: 0 0 12px #10b981 !important; transition: outline 0.2s ease, box-shadow 0.2s ease; }
+        .main-content * { transition: outline 0.1s ease-in-out; }
+
+        .custom-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;
+            z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease-in-out;
+        }
+        .custom-modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .custom-modal {
+            background-color: white; padding: 2rem; border-radius: 0.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center; max-width: 90%; width: 400px;
+        }
+        .custom-modal h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; }
+        .custom-modal p { margin-bottom: 1.5rem; }
+        .custom-modal button {
+            padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 500; cursor: pointer;
+        }
+        .custom-modal .confirm-button { background-color: #3b82f6; color: white; margin-left: 0.5rem; }
+        .custom-modal .cancel-button { background-color: #e5e7eb; color: #374151; }
+
+        .dropdown-item {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: #374151;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        .dropdown-item:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 50;
+        }
+        .has-tooltip:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Arrow styles */
+        .popup-arrow {
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+        .popup-arrow.arrow-up {
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid #a855f7; /* purple-500 */
+        }
+        .popup-arrow.arrow-down {
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid #a855f7; /* purple-500 */
+        }
+        .popup-arrow.arrow-left {
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-right: 10px solid #a855f7; /* purple-500 */
+        }
+        .popup-arrow.arrow-right {
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 10px solid #a855f7; /* purple-500 */
+        }
+        
+        /* Active menu item style */
+        .menu-item.active {
+            background-color: #3b82f6; /* blue-600 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 flex">
+
+    <!-- Left Side Menu -->
+    <aside id="leftMenu" class="w-16 bg-gray-800 text-white flex flex-col items-center py-4 space-y-2 flex-shrink-0">
+        <div class="has-tooltip relative">
+            <a href="#" data-page="home" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-700 active">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            </a>
+            <span class="tooltip absolute left-full ml-4 px-2 py-1 bg-gray-900 text-white text-xs rounded-md whitespace-nowrap">Home</span>
+        </div>
+        <div class="has-tooltip relative">
+            <a href="#" data-page="users" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            </a>
+            <span class="tooltip absolute left-full ml-4 px-2 py-1 bg-gray-900 text-white text-xs rounded-md whitespace-nowrap">Users</span>
+        </div>
+        <div class="has-tooltip relative">
+            <a href="#" data-page="products" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+            </a>
+            <span class="tooltip absolute left-full ml-4 px-2 py-1 bg-gray-900 text-white text-xs rounded-md whitespace-nowrap">Products</span>
+        </div>
+        <div class="has-tooltip relative">
+            <a href="#" data-page="settings" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </a>
+            <span class="tooltip absolute left-full ml-4 px-2 py-1 bg-gray-900 text-white text-xs rounded-md whitespace-nowrap">Settings</span>
+        </div>
+    </aside>
+
+    <div class="flex-grow flex flex-col">
+        <script type="module">
+            // --- State variables ---
+            let currentWorkflowId = null, currentWorkflowName = '', currentStepNumber = 1, isElementSelectionMode = false, highlightedElementForSelection = null;
+            let runningWorkflowData = null, currentRunningStepIndex = 0, highlightedElementForRunning = null;
+
+            const WORKFLOW_STORAGE_KEY = 'workflowBuilderApp_workflows';
+            const USER_STORAGE_KEY = 'workflowBuilderApp_users';
+            
+            let monthlySalesChart = null;
+            let salesByGeoChart = null;
+
+
+            // --- UI Elements ---
+            const mainScreen = document.getElementById('mainScreen');
+            const workflowDropdownButton = document.getElementById('workflowDropdownButton');
+            const workflowDropdownPanel = document.getElementById('workflowDropdownPanel');
+            const createNewWorkflowLink = document.getElementById('createNewWorkflow');
+            const availableWorkflowsListDiv = document.getElementById('availableWorkflowsList');
+            
+            // Popups
+            const workflowNamePopup = document.getElementById('workflowNamePopup');
+            const workflowNameInput = document.getElementById('workflowNameInput');
+            const saveWorkflowNameButton = document.getElementById('saveWorkflowNameButton');
+            const cancelWorkflowNameButton = document.getElementById('cancelWorkflowNameButton');
+            const helpTextPopup = document.getElementById('helpTextPopup');
+            const helpTextInput = document.getElementById('helpTextInput');
+            const addHelpTextButton = document.getElementById('addHelpTextButton');
+            const cancelHelpTextButton = document.getElementById('cancelHelpTextButton');
+            const suggestHelpTextButton = document.getElementById('suggestHelpTextButton');
+            const selectedElementPathDiv = document.getElementById('selectedElementPath');
+            const runStepPopup = document.getElementById('runStepPopup');
+            const popupArrow = document.getElementById('popupArrow');
+            const runStepHelpText = document.getElementById('runStepHelpText');
+            const runStepInfo = document.getElementById('runStepInfo');
+            const nextStepButton = document.getElementById('nextStepButton');
+            const endWorkflowRunButton = document.getElementById('endWorkflowRunButton');
+            
+            const nextStepChoicePopup = document.getElementById('nextStepChoicePopup');
+            const finishFromChoiceButton = document.getElementById('finishFromChoiceButton');
+            const addAnotherStepButton = document.getElementById('addAnotherStepButton');
+            
+            // New User Page Elements
+            const createUserForm = document.getElementById('createUserForm');
+            const userListBody = document.getElementById('userListBody');
+
+            // Other UI
+            const leftMenu = document.getElementById('leftMenu');
+            const pageViews = document.querySelectorAll('.page-view');
+            const menuItems = document.querySelectorAll('.menu-item');
+            const customModalOverlay = document.getElementById('customModalOverlay');
+            const customModalTitle = document.getElementById('customModalTitle');
+            const customModalMessage = document.getElementById('customModalMessage');
+
+            // --- LocalStorage Helper Functions ---
+            function getWorkflowsFromStorage() { const json = localStorage.getItem(WORKFLOW_STORAGE_KEY); return json ? JSON.parse(json) : []; }
+            function saveWorkflowsToStorage(workflows) { localStorage.setItem(WORKFLOW_STORAGE_KEY, JSON.stringify(workflows)); }
+            function getUsersFromStorage() { const json = localStorage.getItem(USER_STORAGE_KEY); return json ? JSON.parse(json) : []; }
+            function saveUsersToStorage(users) { localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(users)); }
+
+            // --- Custom Modal Function ---
+            function showCustomAlert(title, message, showCancel = false) {
+                customModalTitle.textContent = title;
+                customModalMessage.textContent = message;
+                document.getElementById('customModalConfirmButton').textContent = 'OK';
+                document.getElementById('customModalCancelButton').style.display = showCancel ? 'inline-block' : 'none';
+                customModalOverlay.classList.add('active');
+
+                return new Promise((resolve) => {
+                    document.getElementById('customModalConfirmButton').onclick = () => { customModalOverlay.classList.remove('active'); resolve(true); };
+                    if (showCancel) { document.getElementById('customModalCancelButton').onclick = () => { customModalOverlay.classList.remove('active'); resolve(false); }; }
+                });
+            }
+            
+            // --- UI Control Functions (Popups & Pages) ---
+            function showPage(pageId) {
+                pageViews.forEach(view => view.classList.toggle('hidden', view.id !== pageId));
+                menuItems.forEach(item => item.classList.toggle('active', item.dataset.page === pageId));
+                if (pageId === 'users') {
+                    renderUserList();
+                } else if (pageId === 'home') {
+                    renderDashboard();
+                }
+            }
+
+            function fadeOut(element, callback) {
+                return new Promise(resolve => {
+                    element.style.opacity = '0';
+                    setTimeout(() => {
+                        element.classList.add('popup-hidden');
+                        element.classList.remove('popup-visible');
+                        if(callback) callback();
+                        resolve();
+                    }, 300);
+                });
+            }
+
+            function fadeIn(element, isPopup = true) {
+                 return new Promise(resolve => {
+                    if (isPopup) {
+                        element.style.opacity = '0';
+                    }
+                    element.classList.remove('popup-hidden');
+                    element.classList.add('popup-visible');
+                    setTimeout(() => {
+                        element.style.opacity = '1';
+                        setTimeout(() => resolve(), 300);
+                    }, 10);
+                });
+            }
+            
+            async function showWorkflowNamePopup() { await fadeOut(mainScreen); await fadeIn(workflowNamePopup); workflowNameInput.focus(); }
+            async function hideWorkflowNamePopup() { await fadeOut(workflowNamePopup); await fadeIn(mainScreen, false); }
+            async function showHelpTextPopup(elementPath) { await fadeOut(mainScreen); helpTextInput.value = ''; selectedElementPathDiv.textContent = `Element: ${elementPath.substring(0,50)}...`; await fadeIn(helpTextPopup); helpTextInput.focus(); }
+            async function hideHelpTextPopup() { await fadeOut(helpTextPopup); }
+
+            async function showRunStepPopup(stepText, currentStep, totalSteps, highlightedElement) {
+                runStepHelpText.textContent = stepText;
+                runStepInfo.textContent = `Step ${currentStep} of ${totalSteps}`;
+
+                const popup = runStepPopup;
+                popup.style.opacity = '0';
+                popup.classList.remove('popup-hidden');
+                popup.classList.add('popup-visible');
+                
+                await new Promise(requestAnimationFrame);
+
+                const popupWidth = popup.offsetWidth;
+                const popupHeight = popup.offsetHeight;
+                
+                popupArrow.className = 'popup-arrow';
+                popup.style.top = ''; popup.style.left = '';
+                popup.style.bottom = ''; popup.style.right = '';
+                popup.style.transform = '';
+                popupArrow.style.top = ''; popupArrow.style.left = '';
+                popupArrow.style.bottom = ''; popupArrow.style.right = '';
+                popupArrow.style.transform = '';
+
+                if (highlightedElement) {
+                    const elRect = highlightedElement.getBoundingClientRect();
+                    const viewportWidth = window.innerWidth;
+                    const viewportHeight = window.innerHeight;
+                    const margin = 15;
+
+                    let finalTop, finalLeft;
+                    let arrowDirection = '';
+
+                    // Try right
+                    if (elRect.right + margin + popupWidth < viewportWidth) {
+                        arrowDirection = 'left';
+                        finalLeft = elRect.right + margin;
+                        finalTop = elRect.top + elRect.height / 2 - popupHeight / 2;
+                    }
+                    // Else, try left
+                    else if (elRect.left - margin - popupWidth > 0) {
+                        arrowDirection = 'right';
+                        finalLeft = elRect.left - popupWidth - margin;
+                        finalTop = elRect.top + elRect.height / 2 - popupHeight / 2;
+                    }
+                    // Else, try below
+                    else if (elRect.bottom + margin + popupHeight < viewportHeight) {
+                        arrowDirection = 'up';
+                        finalTop = elRect.bottom + margin;
+                        finalLeft = elRect.left + elRect.width / 2 - popupWidth / 2;
+                    }
+                    // Else, try above
+                    else if (elRect.top - margin - popupHeight > 0) {
+                        arrowDirection = 'down';
+                        finalTop = elRect.top - popupHeight - margin;
+                        finalLeft = elRect.left + elRect.width / 2 - popupWidth / 2;
+                    }
+                    // Fallback
+                    else {
+                        arrowDirection = '';
+                        finalTop = margin;
+                        finalLeft = (viewportWidth - popupWidth) / 2;
+                    }
+                    
+                    finalTop = Math.max(margin, Math.min(finalTop, viewportHeight - popupHeight - margin));
+                    finalLeft = Math.max(margin, Math.min(finalLeft, viewportWidth - popupWidth - margin));
+
+                    popup.style.top = `${finalTop}px`;
+                    popup.style.left = `${finalLeft}px`;
+                    
+                    if(arrowDirection) {
+                        popupArrow.classList.add(`arrow-${arrowDirection}`);
+                        
+                        const arrowOffset = 10;
+                        const elCenterY = elRect.top + elRect.height / 2;
+                        const elCenterX = elRect.left + elRect.width / 2;
+                        
+                        switch(arrowDirection) {
+                            case 'left':
+                                popupArrow.style.left = `-${arrowOffset}px`;
+                                popupArrow.style.top = `${Math.max(0, elCenterY - finalTop - arrowOffset)}px`;
+                                break;
+                            case 'right':
+                                popupArrow.style.right = `-${arrowOffset}px`;
+                                popupArrow.style.top = `${Math.max(0, elCenterY - finalTop - arrowOffset)}px`;
+                                break;
+                            case 'up':
+                                popupArrow.style.top = `-${arrowOffset}px`;
+                                popupArrow.style.left = `${Math.max(0, elCenterX - finalLeft - arrowOffset)}px`;
+                                break;
+                            case 'down':
+                                popupArrow.style.bottom = `-${arrowOffset}px`;
+                                popupArrow.style.left = `${Math.max(0, elCenterX - finalLeft - arrowOffset)}px`;
+                                break;
+                        }
+                    }
+                } else {
+                    popup.style.left = '50%';
+                    popup.style.top = '50%';
+                    popup.style.transform = 'translate(-50%, -50%)';
+                }
+
+                popup.style.opacity = '1';
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+            
+            async function hideRunStepPopup() { 
+                await fadeOut(runStepPopup); 
+            }
+
+            async function showNextStepChoicePopup() {
+                await fadeIn(nextStepChoicePopup);
+            }
+
+            async function hideNextStepChoicePopup() {
+                await fadeOut(nextStepChoicePopup);
+            }
+
+            // --- Dashboard Logic ---
+            function renderDashboard() {
+                // Employee Stats
+                const users = getUsersFromStorage();
+                document.getElementById('totalEmployees').textContent = users.length;
+                const maleCount = users.filter(u => u.gender === 'Male').length;
+                const femaleCount = users.filter(u => u.gender === 'Female').length;
+                document.getElementById('gentsCount').textContent = maleCount;
+                document.getElementById('ladiesCount').textContent = femaleCount;
+
+                // Sales Stats
+                const totalSales = 2845000;
+                document.getElementById('totalSales').textContent = `$${(totalSales / 1000000).toFixed(2)}M`;
+                document.getElementById('income').textContent = `$${(totalSales * 0.4).toLocaleString()}`;
+                document.getElementById('profitMargin').textContent = `22%`;
+                document.getElementById('ebidta').textContent = `$${(totalSales * 0.3).toLocaleString()}`;
+
+                // Monthly Sales Chart
+                const monthlySalesCtx = document.getElementById('monthlySalesChart').getContext('2d');
+                if (monthlySalesChart) monthlySalesChart.destroy();
+                monthlySalesChart = new Chart(monthlySalesCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Sales',
+                            data: [120000, 190000, 300000, 500000, 200000, 300000],
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1,
+                            tension: 0.4
+                        }]
+                    },
+                    options: { scales: { y: { beginAtZero: true } } }
+                });
+
+                // Sales by Geography Chart
+                const salesByGeoCtx = document.getElementById('salesByGeoChart').getContext('2d');
+                if (salesByGeoChart) salesByGeoChart.destroy();
+                salesByGeoChart = new Chart(salesByGeoCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['NA', 'EMEA', 'APAC', 'LATAM'],
+                        datasets: [{
+                            label: 'Sales by Geography',
+                            data: [1200000, 850000, 550000, 245000],
+                            backgroundColor: ['#3b82f6', '#10b981', '#f97316', '#ef4444'],
+                        }]
+                    },
+                    options: { scales: { y: { beginAtZero: true } } }
+                });
+            }
+
+            // --- User Management Logic ---
+            function renderUserList() {
+                const users = getUsersFromStorage();
+                userListBody.innerHTML = '';
+                if(users.length === 0) {
+                    userListBody.innerHTML = `<tr><td colspan="4" class="text-center text-gray-500 py-4">No users found. Add one using the form above.</td></tr>`;
+                    return;
+                }
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    const maskedContact = user.contact ? `******${user.contact.slice(-4)}` : '';
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${user.code}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <span class="contact-number" data-full-number="${user.contact}">${maskedContact}</span>
+                            ${user.contact ? `<button class="ml-2 text-blue-600 hover:text-blue-800 text-xs font-semibold toggle-contact">[Show]</button>` : ''}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.email}</td>
+                    `;
+                    userListBody.appendChild(row);
+                });
+            }
+
+            function handleCreateUser(event) {
+                event.preventDefault();
+                const form = event.target;
+                const newUser = {
+                    code: form.empCode.value,
+                    name: form.empName.value,
+                    contact: form.empContact.value,
+                    email: form.empEmail.value,
+                    gender: form.empGender.value
+                };
+                
+                const users = getUsersFromStorage();
+                users.push(newUser);
+                saveUsersToStorage(users);
+                renderUserList();
+                form.reset();
+            }
+
+            // --- Workflow Creation Logic ---
+            async function saveWorkflowName() {
+                const name = workflowNameInput.value.trim();
+                if (!name) { showCustomAlert("Input Required", "Please enter a workflow name."); return; }
+                const newWorkflow = { id: `wf_${Date.now()}`, workflowName: name, createdAt: new Date().toISOString(), steps: [] };
+                const workflows = getWorkflowsFromStorage();
+                workflows.push(newWorkflow);
+                saveWorkflowsToStorage(workflows);
+                currentWorkflowId = newWorkflow.id;
+                currentWorkflowName = newWorkflow.workflowName;
+                currentStepNumber = 1;
+                await hideWorkflowNamePopup();
+                enableElementSelectionMode();
+                await showCustomAlert("Workflow Created", `"${name}" created. Select element for Step 1.`);
+            }
+            
+            function getElementPath(element) {
+                if (!element || !element.tagName) return 'N/A';
+                const path = []; let currentElement = element;
+                while (currentElement && currentElement.parentElement && currentElement !== document.body) {
+                    let siblingIndex = 1; let sibling = currentElement.previousElementSibling;
+                    while (sibling) { if (sibling.tagName === currentElement.tagName) siblingIndex++; sibling = sibling.previousElementSibling; }
+                    const tagName = currentElement.tagName.toLowerCase();
+                    let selector = currentElement.id ? `${tagName}#${currentElement.id.trim().replace(/\s+/g, '-')}` : `${tagName}:nth-of-type(${siblingIndex})`;
+                    path.unshift(selector); currentElement = currentElement.parentElement;
+                }
+                if (path.length === 0 && element.tagName) path.unshift(element.tagName.toLowerCase() + (element.id ? `#${element.id.trim().replace(/\s+/g, '-')}`: ''));
+                return path.join(' > ');
+            }
+
+            function handleElementMouseOver(event) {
+                if (!isElementSelectionMode) return;
+                
+                const ignoredElementsOrParents = ['.popup-fade', '#customModalOverlay', 'header', '#workflowDropdownButton', '#workflowDropdownPanel'];
+                if (ignoredElementsOrParents.some(selector => event.target.closest(selector))) {
+                    if (highlightedElementForSelection) {
+                        highlightedElementForSelection.classList.remove('element-hover-outline');
+                        highlightedElementForSelection = null;
+                    }
+                    return;
+                }
+
+                if (highlightedElementForSelection) highlightedElementForSelection.classList.remove('element-hover-outline');
+                if (event.target instanceof HTMLElement && event.target !== document.body && event.target !== document.documentElement) {
+                    highlightedElementForSelection = event.target;
+                    highlightedElementForSelection.classList.add('element-hover-outline');
+                }
+            }
+
+            function handleElementMouseOut(event) {
+                if (highlightedElementForSelection) {
+                    highlightedElementForSelection.classList.remove('element-hover-outline');
+                    highlightedElementForSelection = null;
+                }
+            }
+
+            async function handleElementClick(event) {
+                if (!isElementSelectionMode) return;
+
+                const ignoredElementsOrParents = ['.popup-fade', '#customModalOverlay', 'header', '#workflowDropdownButton', '#workflowDropdownPanel'];
+                if (ignoredElementsOrParents.some(selector => event.target.closest(selector))) {
+                    return;
+                }
+
+                const ignoredSelf = ['body', 'html', '#mainScreen', '#leftMenu'];
+                 if (ignoredSelf.some(selector => event.target.matches(selector))) {
+                    return;
+                }
+                
+                event.preventDefault();
+                event.stopPropagation();
+                
+                if (highlightedElementForSelection) {
+                    highlightedElementForSelection.classList.remove('element-hover-outline');
+                }
+
+                disableElementSelectionMode();
+                await showHelpTextPopup(getElementPath(event.target));
+                helpTextPopup.dataset.elementPath = getElementPath(event.target);
+            }
+
+            async function addHelpTextStep() {
+                if (!currentWorkflowId) { showCustomAlert("Error", "No active workflow."); return; }
+                const helpText = helpTextInput.value.trim(); const elementPath = helpTextPopup.dataset.elementPath;
+                if (!helpText || !elementPath) { showCustomAlert("Input Required", "Help text and element are required."); return; }
+                
+                const targetElement = document.querySelector(elementPath);
+                if(targetElement && typeof targetElement.click === 'function') {
+                    targetElement.click();
+                }
+
+                const newStep = { stepNumber: currentStepNumber, elementPath, helpText, createdAt: new Date().toISOString() };
+                const workflows = getWorkflowsFromStorage();
+                const workflowIndex = workflows.findIndex(wf => wf.id === currentWorkflowId);
+                if (workflowIndex === -1) { showCustomAlert("Error", "Could not find workflow to save step."); return; }
+                workflows[workflowIndex].steps.push(newStep);
+                saveWorkflowsToStorage(workflows);
+                currentStepNumber++;
+                await hideHelpTextPopup();
+                await fadeIn(mainScreen, false);
+                await showNextStepChoicePopup();
+            }
+            
+            async function finishWorkflow() {
+                const workflowNameBeingFinished = currentWorkflowName;
+                currentWorkflowId = null; currentWorkflowName = ''; currentStepNumber = 1;
+                disableElementSelectionMode();
+                await showCustomAlert("Workflow Finished", `"${workflowNameBeingFinished || 'Workflow'}" has been saved.`);
+                await fetchAndDisplayWorkflows();
+            }
+
+            function enableElementSelectionMode() { 
+                isElementSelectionMode = true; 
+                document.body.addEventListener('mouseover', handleElementMouseOver); 
+                document.body.addEventListener('mouseout', handleElementMouseOut); 
+                document.body.addEventListener('click', handleElementClick, true); 
+                document.body.style.cursor = 'crosshair'; 
+            }
+            function disableElementSelectionMode() { 
+                isElementSelectionMode = false; 
+                if (highlightedElementForSelection) {
+                    highlightedElementForSelection.classList.remove('element-hover-outline');
+                    highlightedElementForSelection = null;
+                }
+                document.body.removeEventListener('mouseover', handleElementMouseOver); 
+                document.body.removeEventListener('mouseout', handleElementMouseOut); 
+                document.body.removeEventListener('click', handleElementClick, true); 
+                document.body.style.cursor = 'default'; 
+            }
+            async function cancelWorkflowCreation() { await hideWorkflowNamePopup(); disableElementSelectionMode(); }
+            async function cancelHelpTextEntry() { await hideHelpTextPopup(); await fadeIn(mainScreen, false); if (currentWorkflowId) enableElementSelectionMode(); }
+
+            // --- Workflow Listing, Running & Editing ---
+            async function deleteWorkflow(workflowId) {
+                const confirmed = await showCustomAlert("Confirm Deletion", "Are you sure you want to delete this workflow? This action cannot be undone.", true);
+                if (confirmed) {
+                    let workflows = getWorkflowsFromStorage();
+                    const updatedWorkflows = workflows.filter(wf => wf.id !== workflowId);
+                    saveWorkflowsToStorage(updatedWorkflows);
+                    await fetchAndDisplayWorkflows();
+                }
+            }
+
+            async function exportWorkflowAsJSON(workflowId) {
+                const workflows = getWorkflowsFromStorage();
+                const workflow = workflows.find(wf => wf.id === workflowId);
+                if (!workflow) {
+                    showCustomAlert("Error", "Could not find workflow to export.");
+                    return;
+                }
+                const jsonString = JSON.stringify(workflow, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${workflow.workflowName.replace(/\s+/g, '_')}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            async function exportWorkflowAsPDF(workflowId) {
+                const { jsPDF } = window.jspdf;
+                const workflows = getWorkflowsFromStorage();
+                const workflow = workflows.find(wf => wf.id === workflowId);
+
+                if (!workflow) {
+                    showCustomAlert("Error", "Could not find workflow to export.");
+                    return;
+                }
+                await showCustomAlert("Generating PDF", "Please wait while the PDF is being generated. This may take a moment.", false);
+
+                const doc = new jsPDF();
+                const sortedSteps = workflow.steps.sort((a,b) => a.stepNumber - b.stepNumber);
+                let isFirstPage = true;
+
+                for (const step of sortedSteps) {
+                    if (!isFirstPage) {
+                        doc.addPage();
+                    }
+                    
+                    const targetElement = document.querySelector(step.elementPath);
+                    if (targetElement && typeof targetElement.click === 'function') {
+                        targetElement.click();
+                    }
+                    
+                    await new Promise(resolve => setTimeout(resolve, 200));
+
+                    if (targetElement) {
+                        targetElement.classList.add('element-running-highlight');
+                    }
+                    
+                    const runStepButtons = runStepPopup.querySelector('.flex.justify-end');
+                    if(runStepButtons) runStepButtons.style.display = 'none';
+
+                    await showRunStepPopup(step.helpText, step.stepNumber, sortedSteps.length, targetElement);
+                    
+                    const canvas = await html2canvas(document.body, {
+                        x: document.body.getBoundingClientRect().left,
+                        y: document.body.getBoundingClientRect().top,
+                        width: document.body.clientWidth,
+                        height: document.body.clientHeight,
+                        useCORS: true,
+                        scale: 2
+                    });
+                    
+                    if(runStepButtons) runStepButtons.style.display = 'flex';
+
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgProps = doc.getImageProperties(imgData);
+                    const pdfWidth = doc.internal.pageSize.getWidth();
+                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                    
+                    doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                    
+                    if (targetElement) {
+                        targetElement.classList.remove('element-running-highlight');
+                    }
+                    await hideRunStepPopup();
+                    isFirstPage = false;
+                }
+                
+                showPage('home');
+                doc.save(`${workflow.workflowName.replace(/\s+/g, '_')}.pdf`);
+            }
+
+            async function fetchAndDisplayWorkflows() {
+                availableWorkflowsListDiv.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">Loading...</div>';
+                setTimeout(() => {
+                    const workflows = getWorkflowsFromStorage().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    if (!workflows.length) { availableWorkflowsListDiv.innerHTML = '<div class="px-4 py-2 text-sm text-gray-500">No workflows yet.</div>'; return; }
+                    availableWorkflowsListDiv.innerHTML = '';
+                    workflows.forEach(wf => {
+                        const wfContainer = document.createElement('div');
+                        wfContainer.className = 'group px-2 py-1 flex items-center justify-between hover:bg-gray-100 rounded-md';
+
+                        const wfLink = document.createElement('a');
+                        wfLink.href = '#';
+                        wfLink.textContent = wf.workflowName;
+                        wfLink.className = 'text-sm text-gray-700 truncate flex-grow cursor-pointer';
+                        wfLink.onclick = (e) => {
+                            e.stopPropagation();
+                            workflowDropdownPanel.classList.add('hidden');
+                            if (currentWorkflowId || runningWorkflowData) { showCustomAlert("Workflow Active", "Please finish current activity first."); return; }
+                            startWorkflowRun(wf.id, wf.workflowName, wf.steps);
+                        };
+
+                        const buttonsContainer = document.createElement('div');
+                        buttonsContainer.className = 'flex items-center space-x-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity';
+                        
+                        const jsonButton = document.createElement('button');
+                        jsonButton.className = 'p-1 hover:bg-gray-300 rounded-full';
+                        jsonButton.title = 'Export as JSON';
+                        jsonButton.innerHTML = `<svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>`;
+                        jsonButton.onclick = (e) => { e.stopPropagation(); exportWorkflowAsJSON(wf.id); };
+                        
+                        const pdfButton = document.createElement('button');
+                        pdfButton.className = 'p-1 hover:bg-gray-300 rounded-full';
+                        pdfButton.title = 'Export as PDF';
+                        pdfButton.innerHTML = `<svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>`;
+                        pdfButton.onclick = (e) => { e.stopPropagation(); exportWorkflowAsPDF(wf.id); };
+                        
+                        const editButton = document.createElement('button');
+                        editButton.className = 'p-1 hover:bg-gray-300 rounded-full';
+                        editButton.title = 'Edit Workflow';
+                        editButton.innerHTML = `<svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>`;
+                        editButton.onclick = (e) => { e.stopPropagation(); workflowDropdownPanel.classList.add('hidden'); if (currentWorkflowId || runningWorkflowData) { showCustomAlert("Workflow Active", "Please finish current activity first."); return; } startWorkflowEdit(wf); };
+                        
+                        const deleteButton = document.createElement('button');
+                        deleteButton.className = 'p-1 hover:bg-gray-300 rounded-full';
+                        deleteButton.title = 'Delete Workflow';
+                        deleteButton.innerHTML = `<svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
+                        deleteButton.onclick = (e) => { e.stopPropagation(); workflowDropdownPanel.classList.add('hidden'); deleteWorkflow(wf.id); };
+
+                        buttonsContainer.appendChild(jsonButton);
+                        buttonsContainer.appendChild(pdfButton);
+                        buttonsContainer.appendChild(editButton);
+                        buttonsContainer.appendChild(deleteButton);
+                        wfContainer.appendChild(wfLink);
+                        wfContainer.appendChild(buttonsContainer);
+                        availableWorkflowsListDiv.appendChild(wfContainer);
+                    });
+                }, 100);
+            }
+            
+            async function startWorkflowEdit(workflow) {
+                if (!workflow || !workflow.id) { showCustomAlert("Error", "Invalid workflow data for editing."); return; }
+                currentWorkflowId = workflow.id;
+                currentWorkflowName = workflow.workflowName;
+                currentStepNumber = (workflow.steps ? workflow.steps.length : 0) + 1;
+                await showCustomAlert("Editing Workflow", `Resumed editing for "${currentWorkflowName}". Select element for Step ${currentStepNumber}.`);
+                enableElementSelectionMode();
+            }
+
+            function startWorkflowRun(id, name, steps) {
+                if (!steps || !steps.length) { showCustomAlert("Empty Workflow", `"${name}" has no steps.`); return; }
+                runningWorkflowData = { id, name, steps: [...steps].sort((a,b) => a.stepNumber - b.stepNumber) };
+                currentRunningStepIndex = 0;
+                disableElementSelectionMode();
+                executeCurrentStep();
+            }
+
+            async function executeCurrentStep() {
+                if (!runningWorkflowData || currentRunningStepIndex >= runningWorkflowData.steps.length) { await endWorkflowRun(true); return; }
+                
+                const step = runningWorkflowData.steps[currentRunningStepIndex];
+                
+                if (highlightedElementForRunning) {
+                    highlightedElementForRunning.classList.remove('element-running-highlight');
+                }
+
+                let targetElement = null;
+                try { 
+                    targetElement = document.querySelector(step.elementPath);
+                } catch (e) { console.warn(`Selector error: ${e.message}`); }
+                
+                if (targetElement) {
+                    if(typeof targetElement.click === 'function') {
+                        targetElement.click();
+                    }
+                    
+                    setTimeout(async () => {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }); 
+                        highlightedElementForRunning = targetElement;
+                        highlightedElementForRunning.classList.add('element-running-highlight');
+                        await showRunStepPopup(step.helpText, step.stepNumber, runningWorkflowData.steps.length, targetElement);
+                    }, 100);
+
+                } else {
+                    await showRunStepPopup(step.helpText + "\n\n(Warning: Element not found on page)", step.stepNumber, runningWorkflowData.steps.length, null);
+                }
+            }
+
+            async function handleNextStep() {
+                await hideRunStepPopup();
+                currentRunningStepIndex++; 
+                executeCurrentStep();
+            }
+            
+            async function endWorkflowRun(completed = false) {
+                if (highlightedElementForRunning) {
+                    highlightedElementForRunning.classList.remove('element-running-highlight');
+                }
+
+                await hideRunStepPopup();
+                const workflowName = runningWorkflowData ? runningWorkflowData.name : "Workflow";
+                runningWorkflowData = null; currentRunningStepIndex = 0;
+                await showCustomAlert(completed ? "Workflow Complete" : "Workflow Ended", `"${workflowName}" has ${completed ? 'finished' : 'stopped'}.`);
+            }
+
+            // --- Gemini API Integration ---
+            async function getHelpTextSuggestion(elementPath) {
+                const targetElement = document.querySelector(elementPath);
+                let elementType = 'element';
+                if(targetElement) {
+                    elementType = targetElement.tagName.toLowerCase();
+                    if(targetElement.textContent) {
+                        elementType += ` with text "${targetElement.textContent.trim().substring(0, 30)}"`;
+                    }
+                }
+
+                const prompt = `Generate a very short, one-sentence help text for a workflow tutorial. The user needs to interact with a ${elementType}. The help text should be a clear instruction. For example, if it's a "Save" button, suggest something like "Click here to save your changes."`;
+
+                suggestHelpTextButton.disabled = true;
+                suggestHelpTextButton.innerHTML = `<svg class="animate-spin h-5 w-5 mr-3 text-yellow-800" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Thinking...`;
+
+                try {
+                    let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""; // Leave empty for Canvas provided key
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) {
+                        const errorBody = await response.text();
+                        console.error("API Error Response:", errorBody);
+                        throw new Error(`API Error: ${response.statusText}`);
+                    }
+                    
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+                        helpTextInput.value = result.candidates[0].content.parts[0].text.replace(/\"/g, ''); // Remove quotes
+                    } else {
+                        console.error("Unexpected API response format:", result);
+                        throw new Error("Unexpected API response format.");
+                    }
+
+                } catch (error) {
+                    console.error("Gemini API Error:", error);
+                    showCustomAlert("AI Error", "Could not generate a suggestion at this time.");
+                } finally {
+                    suggestHelpTextButton.disabled = false;
+                    suggestHelpTextButton.innerHTML = `✨ Suggest Text`;
+                }
+            }
+
+            // --- Event Listeners ---
+            workflowDropdownButton.addEventListener('click', (e) => { e.stopPropagation(); workflowDropdownPanel.classList.toggle('hidden'); });
+            window.addEventListener('click', () => { if (!workflowDropdownPanel.classList.contains('hidden')) workflowDropdownPanel.classList.add('hidden'); });
+            createNewWorkflowLink.addEventListener('click', (e) => { e.preventDefault(); workflowDropdownPanel.classList.add('hidden'); if (runningWorkflowData || currentWorkflowId) { showCustomAlert("Workflow Active", "Please finish current activity first."); return; } showWorkflowNamePopup(); });
+            saveWorkflowNameButton.addEventListener('click', saveWorkflowName);
+            cancelWorkflowNameButton.addEventListener('click', cancelWorkflowCreation);
+            addHelpTextButton.addEventListener('click', addHelpTextStep);
+            cancelHelpTextButton.addEventListener('click', cancelHelpTextEntry);
+            suggestHelpTextButton.addEventListener('click', () => {
+                const elementPath = helpTextPopup.dataset.elementPath;
+                if(elementPath) getHelpTextSuggestion(elementPath);
+            });
+            addAnotherStepButton.addEventListener('click', () => { hideNextStepChoicePopup().then(() => enableElementSelectionMode()); });
+            finishFromChoiceButton.addEventListener('click', () => { hideNextStepChoicePopup().then(() => finishWorkflow()); });
+            nextStepButton.addEventListener('click', handleNextStep);
+            endWorkflowRunButton.addEventListener('click', () => endWorkflowRun(false));
+            
+            menuItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showPage(item.dataset.page);
+                });
+            });
+
+            createUserForm.addEventListener('submit', handleCreateUser);
+            
+            userListBody.addEventListener('click', function(event) {
+                const button = event.target.closest('.toggle-contact');
+                if (button) {
+                    const contactSpan = button.previousElementSibling;
+                    const fullNumber = contactSpan.dataset.fullNumber;
+                    const isShowing = contactSpan.textContent.includes('*');
+
+                    if (isShowing) {
+                        contactSpan.textContent = fullNumber;
+                        button.textContent = '[Hide]';
+                    } else {
+                        contactSpan.textContent = `******${fullNumber.slice(-4)}`;
+                        button.textContent = '[Show]';
+                    }
+                }
+            });
+            
+            document.addEventListener('DOMContentLoaded', () => { 
+                showPage('home');
+                fetchAndDisplayWorkflows(); 
+                ['workflowNamePopup', 'helpTextPopup', 'runStepPopup', 'nextStepChoicePopup'].forEach(id => document.getElementById(id).classList.add('popup-hidden')); 
+            });
+        </script>
+        
+        <div id="appContainer" class="flex-grow flex flex-col">
+            <!-- Header -->
+            <header class="bg-white text-gray-800 shadow-md sticky top-0 z-40 flex-shrink-0">
+                <div class="flex items-center justify-between h-[50px] px-4">
+                    <h1 class="text-xl font-bold text-blue-600">APG Hackathon - DEMO</h1>
+                    <div class="relative">
+                        <button id="workflowDropdownButton" class="flex items-center space-x-2 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-md transition">
+                            <span>Workflows</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div id="workflowDropdownPanel" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 py-1 z-50">
+                            <a href="#" id="createNewWorkflow" class="dropdown-item font-semibold text-blue-600">Create New Workflow</a>
+                            <hr class="my-1"/>
+                            <div id="availableWorkflowsList" class="max-h-60 overflow-y-auto">
+                               <div class="px-4 py-2 text-sm text-gray-500">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Screen Content -->
+            <main id="mainScreen" class="flex-grow p-6 main-screen-fade opacity-100 bg-gray-100">
+                <div id="home" class="page-view bg-white p-8 rounded-lg shadow-xl">
+                    <h2 class="text-3xl font-semibold mb-6 text-gray-700">Dashboard</h2>
+                    <!-- Employee Overview -->
+                    <section class="mb-8">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Employee Overview</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            <div class="bg-blue-100 p-4 rounded-lg shadow text-center">
+                                <p class="text-sm text-blue-800 font-semibold">Total Employees</p>
+                                <p id="totalEmployees" class="text-3xl font-bold text-blue-900">0</p>
+                            </div>
+                            <div class="bg-pink-100 p-4 rounded-lg shadow text-center">
+                                <p class="text-sm text-pink-800 font-semibold">Ladies</p>
+                                <p id="ladiesCount" class="text-3xl font-bold text-pink-900">0</p>
+                            </div>
+                            <div class="bg-indigo-100 p-4 rounded-lg shadow text-center">
+                                <p class="text-sm text-indigo-800 font-semibold">Gents</p>
+                                <p id="gentsCount" class="text-3xl font-bold text-indigo-900">0</p>
+                            </div>
+                            <div class="bg-green-100 p-4 rounded-lg shadow text-center">
+                                <p class="text-sm text-green-800 font-semibold">Avg. Experience</p>
+                                <p class="text-3xl font-bold text-green-900">4.2 yrs</p>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Sales Dashboard -->
+                    <section>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Sales Dashboard</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                             <div class="bg-gray-100 p-4 rounded-lg shadow text-center">
+                                <p class="text-sm text-gray-600 font-semibold">Total Sales</p>
+                                <p id="totalSales" class="text-2xl font-bold text-gray-900">$0</p>
+                            </div>
+                             <div class="bg-gray-100 p-4 rounded-lg shadow text-center">
+                                <p class="text-sm text-gray-600 font-semibold">Income</p>
+                                <p id="income" class="text-2xl font-bold text-gray-900">$0</p>
+                            </div>
+                             <div class="bg-gray-100 p-4 rounded-lg shadow text-center">
+                                <p class="text-sm text-gray-600 font-semibold">Profit Margin</p>
+                                <p id="profitMargin" class="text-2xl font-bold text-gray-900">0%</p>
+                            </div>
+                             <div class="bg-gray-100 p-4 rounded-lg shadow text-center">
+                                <p class="text-sm text-gray-600 font-semibold">EBITDA</p>
+                                <p id="ebidta" class="text-2xl font-bold text-gray-900">$0</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="bg-white p-4 rounded-lg shadow">
+                                <h4 class="font-semibold mb-2">Monthly Sales</h4>
+                                <canvas id="monthlySalesChart"></canvas>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow">
+                                <h4 class="font-semibold mb-2">Sales by Geography</h4>
+                                <canvas id="salesByGeoChart"></canvas>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div id="users" class="page-view hidden bg-white p-8 rounded-lg shadow-xl">
+                     <h2 class="text-3xl font-semibold mb-6 text-gray-700">User Management</h2>
+
+                    <!-- Create User Form -->
+                    <div class="bg-gray-50 p-6 rounded-lg border mb-8">
+                        <h3 class="text-xl font-medium mb-4">Create New Employee</h3>
+                        <form id="createUserForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-end">
+                            <div class="col-span-1">
+                                <label for="empCode" class="block text-sm font-medium text-gray-700">Emp Code</label>
+                                <input type="text" id="empCode" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div class="col-span-1">
+                                <label for="empName" class="block text-sm font-medium text-gray-700">Full Name</label>
+                                <input type="text" id="empName" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div class="col-span-1">
+                                <label for="empContact" class="block text-sm font-medium text-gray-700">Contact</label>
+                                <input type="tel" id="empContact" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                             <div class="col-span-1">
+                                <label for="empGender" class="block text-sm font-medium text-gray-700">Gender</label>
+                                <select id="empGender" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option>Male</option>
+                                    <option>Female</option>
+                                </select>
+                            </div>
+                            <div class="col-span-1">
+                                <label for="empEmail" class="block text-sm font-medium text-gray-700">Email ID</label>
+                                <input type="email" id="empEmail" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div class="col-span-1">
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Add Employee</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Users List -->
+                    <h3 class="text-xl font-medium mb-4">Employee List</h3>
+                    <div class="overflow-x-auto bg-white rounded-lg shadow">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee Code</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userListBody" class="bg-white divide-y divide-gray-200">
+                                <!-- User rows will be inserted here by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="products" class="page-view hidden bg-white p-8 rounded-lg shadow-xl">
+                     <h2 class="text-3xl font-semibold mb-6 text-gray-700">Products Page</h2>
+                     <p class="text-gray-600">This is where product information would go.</p>
+                </div>
+                <div id="settings" class="page-view hidden bg-white p-8 rounded-lg shadow-xl">
+                     <h2 class="text-3xl font-semibold mb-6 text-gray-700">Settings Page</h2>
+                     <p class="text-gray-600">This is where application settings would go.</p>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- POPUPS -->
+    <div id="workflowNamePopup" class="fixed bottom-6 right-6 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-blue-500"><h3 class="text-xl font-semibold mb-4 text-gray-700">Create New Workflow</h3><input type="text" id="workflowNameInput" placeholder="Enter Workflow Name" class="w-full p-3 border rounded-md mb-4 focus:ring-2 focus:ring-blue-500"><div class="flex justify-end space-x-3"><button id="cancelWorkflowNameButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button><button id="saveWorkflowNameButton" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Save & Start</button></div></div>
+    <div id="helpTextPopup" class="fixed bottom-6 right-6 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-green-500"><h3 class="text-xl font-semibold mb-2 text-gray-700">Add Help Text for Step</h3><div id="selectedElementPath" class="text-xs text-gray-500 mb-3 break-all">Element: ...</div><textarea id="helpTextInput" placeholder="Enter Help Text" class="w-full p-3 border rounded-md mb-4 h-24 focus:ring-2 focus:ring-green-500"></textarea><div class="flex justify-between items-center"><button id="suggestHelpTextButton" class="px-4 py-2 bg-yellow-400 text-yellow-800 rounded-md hover:bg-yellow-500 transition font-semibold flex items-center justify-center">✨ Suggest Text</button><div class="space-x-3"><button id="cancelHelpTextButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button><button id="addHelpTextButton" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add Step</button></div></div></div>
+    <div id="runStepPopup" class="fixed bg-white p-6 rounded-lg shadow-2xl w-full max-w-sm popup-fade popup-hidden z-50 border-2 border-purple-500">
+        <div id="popupArrow" class="popup-arrow"></div>
+        <h3 class="text-xl font-semibold mb-2 text-gray-700">Workflow Step</h3>
+        <div id="runStepInfo" class="text-sm text-gray-500 mb-3">Step X of Y</div>
+        <div id="runStepHelpText" class="bg-gray-100 p-4 rounded-md mb-4 min-h-[60px]">Help text...</div>
+        <div class="flex justify-end space-x-3">
+            <button id="endWorkflowRunButton" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">End Workflow</button>
+            <button id="nextStepButton" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">Next Step</button>
+        </div>
+    </div>
+    <div id="nextStepChoicePopup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-indigo-500">
+        <h3 class="text-xl font-semibold mb-4 text-gray-700">Step Added!</h3>
+        <p class="text-gray-600 mb-6">What would you like to do next?</p>
+        <div class="flex justify-end space-x-3">
+            <button id="finishFromChoiceButton" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Finish Workflow</button>
+            <button id="addAnotherStepButton" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add Next Step</button>
+        </div>
+    </div>
+    <div id="customModalOverlay" class="custom-modal-overlay"><div class="custom-modal"><h3 id="customModalTitle"></h3><p id="customModalMessage"></p><div class="flex justify-end space-x-2 mt-4"><button id="customModalCancelButton" class="cancel-button">Cancel</button><button id="customModalConfirmButton" class="confirm-button">OK</button></div></div></div>
+
+</body>
+</html>
