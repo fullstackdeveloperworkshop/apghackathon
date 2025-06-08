@@ -12,15 +12,11 @@
         html, body {
             margin: 0;
             padding: 0;
+            height: 100%;
+            overflow: hidden;
         }
         body { 
             font-family: 'Inter', sans-serif; 
-        }
-        #appContainer {
-            height: 100vh;
-        }
-        #mainScreen {
-            overflow-y: auto;
         }
         .main-screen-fade { transition: opacity 0.3s ease-in-out; }
         .popup-fade { transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; }
@@ -99,43 +95,250 @@
         
         /* Active menu item style */
         .menu-item.active {
-            background-color: #3b82f6; /* blue-600 */
+            background-color: #2a7b9b;
+            color: white;
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 flex">
+<body class="bg-gray-100 text-gray-800">
 
-    <!-- Left Side Menu -->
-    <aside id="leftMenu" class="w-16 bg-gray-800 text-white flex flex-col items-center py-4 space-y-2 flex-shrink-0">
-        <div class="has-tooltip relative">
-            <a href="#" data-page="home" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-700 active">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-            </a>
-            <span class="tooltip absolute left-full ml-4 px-2 py-1 bg-gray-900 text-white text-xs rounded-md whitespace-nowrap">Home</span>
-        </div>
-        <div class="has-tooltip relative">
-            <a href="#" data-page="users" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-700">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-            </a>
-            <span class="tooltip absolute left-full ml-4 px-2 py-1 bg-gray-900 text-white text-xs rounded-md whitespace-nowrap">Users</span>
-        </div>
-        <div class="has-tooltip relative">
-            <a href="#" data-page="products" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-700">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-            </a>
-            <span class="tooltip absolute left-full ml-4 px-2 py-1 bg-gray-900 text-white text-xs rounded-md whitespace-nowrap">Products</span>
-        </div>
-        <div class="has-tooltip relative">
-            <a href="#" data-page="settings" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-700">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-            </a>
-            <span class="tooltip absolute left-full ml-4 px-2 py-1 bg-gray-900 text-white text-xs rounded-md whitespace-nowrap">Settings</span>
-        </div>
-    </aside>
+    <div class="h-screen flex flex-col">
+        <!-- Header -->
+        <header class="text-white shadow-md z-40 flex-shrink-0" style="background: linear-gradient(90deg, rgba(42, 123, 155, 1) 0%, rgb(37, 201, 162) 50%, rgb(10, 182, 206) 100%);">
+            <div class="flex items-center justify-between h-[50px] px-4">
+                <h1 class="text-xl font-bold">APG Hackathon - DEMO</h1>
+                <div class="relative">
+                    <button id="workflowDropdownButton" class="flex items-center space-x-2 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-md transition text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                        <span>Workflows</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="workflowDropdownPanel" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 py-1 z-50">
+                        <a href="#" id="createNewWorkflow" class="dropdown-item font-semibold text-gray-800">Create New Workflow</a>
+                        <a href="#" id="createWithAI" class="dropdown-item font-semibold text-gray-800">✨ Create with AI</a>
+                        <hr class="my-1"/>
+                        <div id="availableWorkflowsList" class="max-h-60 overflow-y-auto">
+                           <div class="px-4 py-2 text-sm text-gray-500">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+        
+        <div class="flex flex-grow overflow-hidden">
+            <!-- Left Side Menu -->
+            <aside id="leftMenu" class="w-16 bg-gray-200 text-gray-600 flex flex-col items-center py-4 space-y-2 flex-shrink-0 border-r border-gray-300">
+                <div class="has-tooltip relative">
+                    <a href="#" data-page="home" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-300 text-gray-600 active">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    </a>
+                    <span class="tooltip absolute left-full ml-4 px-2 py-1 bg-gray-700 text-white text-xs rounded-md whitespace-nowrap">Home</span>
+                </div>
+                <div class="has-tooltip relative">
+                    <a href="#" data-page="users" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-300 text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </a>
+                    <span class="tooltip absolute left-full ml-4 px-2 py-1 bg-gray-700 text-white text-xs rounded-md whitespace-nowrap">Users</span>
+                </div>
+                <div class="has-tooltip relative">
+                    <a href="#" data-page="products" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-300 text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                    </a>
+                    <span class="tooltip absolute left-full ml-4 px-2 py-1 bg-gray-700 text-white text-xs rounded-md whitespace-nowrap">Products</span>
+                </div>
+                <div class="has-tooltip relative">
+                    <a href="#" data-page="settings" class="menu-item p-3 flex items-center justify-center rounded-full hover:bg-gray-300 text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </a>
+                    <span class="tooltip absolute left-full ml-4 px-2 py-1 bg-gray-700 text-white text-xs rounded-md whitespace-nowrap">Settings</span>
+                </div>
+            </aside>
 
-    <div class="flex-grow flex flex-col">
-        <script type="module">
-            // --- State variables ---
+            <div id="appContainer" class="flex-grow flex flex-col">
+                <!-- Main Screen Content -->
+                <main id="mainScreen" class="flex-grow main-screen-fade opacity-100 bg-gray-100">
+                    <div id="home" class="page-view p-8">
+                        <div class="bg-white p-8 rounded-lg shadow-xl">
+                            <h2 class="text-3xl font-semibold mb-6 text-gray-700">Dashboard</h2>
+                            <!-- Employee Overview -->
+                            <section class="mb-8">
+                                <h3 class="text-xl font-semibold text-gray-800 mb-4">Employee Overview</h3>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                    <div class="bg-blue-100 p-4 rounded-lg shadow text-center">
+                                        <p class="text-sm text-blue-800 font-semibold">Total Employees</p>
+                                        <p id="totalEmployees" class="text-3xl font-bold text-blue-900">0</p>
+                                    </div>
+                                    <div class="bg-pink-100 p-4 rounded-lg shadow text-center">
+                                        <p class="text-sm text-pink-800 font-semibold">Ladies</p>
+                                        <p id="ladiesCount" class="text-3xl font-bold text-pink-900">0</p>
+                                    </div>
+                                    <div class="bg-indigo-100 p-4 rounded-lg shadow text-center">
+                                        <p class="text-sm text-indigo-800 font-semibold">Gents</p>
+                                        <p id="gentsCount" class="text-3xl font-bold text-indigo-900">0</p>
+                                    </div>
+                                    <div class="bg-green-100 p-4 rounded-lg shadow text-center">
+                                        <p class="text-sm text-green-800 font-semibold">Avg. Experience</p>
+                                        <p class="text-3xl font-bold text-green-900">4.2 yrs</p>
+                                    </div>
+                                </div>
+                            </section>
+                        
+                        <!-- Sales Dashboard -->
+                        <section>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Sales Dashboard</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                                 <div class="bg-gray-100 p-4 rounded-lg shadow text-center">
+                                    <p class="text-sm text-gray-600 font-semibold">Total Sales</p>
+                                    <p id="totalSales" class="text-2xl font-bold text-gray-900">$0</p>
+                                </div>
+                                 <div class="bg-gray-100 p-4 rounded-lg shadow text-center">
+                                    <p class="text-sm text-gray-600 font-semibold">Income</p>
+                                    <p id="income" class="text-2xl font-bold text-gray-900">$0</p>
+                                </div>
+                                 <div class="bg-gray-100 p-4 rounded-lg shadow text-center">
+                                    <p class="text-sm text-gray-600 font-semibold">Profit Margin</p>
+                                    <p id="profitMargin" class="text-2xl font-bold text-gray-900">0%</p>
+                                </div>
+                                 <div class="bg-gray-100 p-4 rounded-lg shadow text-center">
+                                    <p class="text-sm text-gray-600 font-semibold">EBITDA</p>
+                                    <p id="ebidta" class="text-2xl font-bold text-gray-900">$0</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div class="bg-white p-4 rounded-lg shadow">
+                                    <h4 class="font-semibold mb-2">Monthly Sales</h4>
+                                    <canvas id="monthlySalesChart"></canvas>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg shadow">
+                                    <h4 class="font-semibold mb-2">Sales by Geography</h4>
+                                    <canvas id="salesByGeoChart"></canvas>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <div id="users" class="page-view hidden p-8">
+                     <div class="bg-white p-8 rounded-lg shadow-xl">
+                        <h2 class="text-3xl font-semibold mb-6 text-gray-700">User Management</h2>
+
+                        <!-- Create User Form -->
+                        <div class="bg-gray-50 p-6 rounded-lg border mb-8">
+                            <h3 class="text-xl font-medium mb-4">Create New Employee</h3>
+                            <form id="createUserForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                                <div class="col-span-1">
+                                    <label for="empName" class="block text-sm font-medium text-gray-700">Full Name</label>
+                                    <input type="text" id="empName" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                <div class="col-span-1">
+                                    <label for="empEmail" class="block text-sm font-medium text-gray-700">Email ID</label>
+                                    <input type="email" id="empEmail" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                <div class="col-span-1">
+                                    <label for="empPhone" class="block text-sm font-medium text-gray-700">Phone</label>
+                                    <input type="tel" id="empPhone" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                 <div class="col-span-1">
+                                    <label for="empId" class="block text-sm font-medium text-gray-700">Employee ID</label>
+                                    <input type="text" id="empId" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                 <div class="col-span-1">
+                                    <label for="empTechnology" class="block text-sm font-medium text-gray-700">Technology</label>
+                                    <input type="text" id="empTechnology" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                 <div class="col-span-1">
+                                    <label for="empExperience" class="block text-sm font-medium text-gray-700">Experience (Yrs)</label>
+                                    <input type="number" id="empExperience" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                <div class="col-span-1">
+                                    <label for="empCountry" class="block text-sm font-medium text-gray-700">Country</label>
+                                    <input type="text" id="empCountry" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                <div class="col-span-1">
+                                    <label for="empCity" class="block text-sm font-medium text-gray-700">City</label>
+                                    <input type="text" id="empCity" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                <div class="col-span-1">
+                                    <label for="empGender" class="block text-sm font-medium text-gray-700">Gender</label>
+                                    <select id="empGender" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                        <option>Male</option>
+                                        <option>Female</option>
+                                    </select>
+                                </div>
+                                <div class="col-span-1 flex items-end">
+                                    <button type="submit" class="w-full text-white font-bold py-2 px-4 rounded-md" style="background-color: #2a7b9b;">Add Employee</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Users List -->
+                        <h3 class="text-xl font-medium mb-4">Employee List</h3>
+                        <div class="overflow-x-auto bg-white rounded-lg shadow">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee ID</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Technology</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Experience</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="userListBody" class="bg-white divide-y divide-gray-200">
+                                    <!-- User rows will be inserted here by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="products" class="page-view hidden p-8">
+                    <div class="bg-white p-8 rounded-lg shadow-xl">
+                         <h2 class="text-3xl font-semibold mb-6 text-gray-700">Products Page</h2>
+                         <p class="text-gray-600">This is where product information would go.</p>
+                    </div>
+                </div>
+                <div id="settings" class="page-view hidden p-8">
+                    <div class="bg-white p-8 rounded-lg shadow-xl">
+                         <h2 class="text-3xl font-semibold mb-6 text-gray-700">Settings Page</h2>
+                         <p class="text-gray-600">This is where application settings would go.</p>
+                    </div>
+                </div>
+
+            </main>
+            <footer class="bg-gray-700 text-gray-300 p-2 text-center text-xs flex-shrink-0">
+                <p><strong>Team:</strong> Team Columbus</p>
+                <p><strong>Developers:</strong> Eldose Chacko &amp; Abdul Ahad</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- POPUPS -->
+    <div id="workflowNamePopup" class="fixed bottom-6 right-6 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-blue-500"><h3 class="text-xl font-semibold mb-4 text-gray-700">Create New Workflow</h3><input type="text" id="workflowNameInput" placeholder="Enter Workflow Name" class="w-full p-3 border rounded-md mb-4 focus:ring-2 focus:ring-blue-500"><div class="flex justify-end space-x-3"><button id="cancelWorkflowNameButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button><button id="saveWorkflowNameButton" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Save & Start</button></div></div>
+    <div id="helpTextPopup" class="fixed bottom-6 right-6 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-green-500"><h3 class="text-xl font-semibold mb-2 text-gray-700">Add Help Text for Step</h3><div id="selectedElementPath" class="text-xs text-gray-500 mb-3 break-all">Element: ...</div><textarea id="helpTextInput" placeholder="Enter Help Text" class="w-full p-3 border rounded-md mb-4 h-24 focus:ring-2 focus:ring-green-500"></textarea><div class="flex justify-between items-center"><button id="suggestHelpTextButton" class="px-4 py-2 bg-yellow-400 text-yellow-800 rounded-md hover:bg-yellow-500 transition font-semibold flex items-center justify-center">✨ Suggest Text</button><div class="space-x-3"><button id="cancelHelpTextButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button><button id="addHelpTextButton" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add Step</button></div></div></div>
+    <div id="aiCreatePopup" class="fixed bottom-6 right-6 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-green-500"><h3 class="text-xl font-semibold mb-2 text-gray-700">✨ Create Workflow with AI</h3><p class="text-sm text-gray-500 mb-3">Describe the workflow you want to create.</p><textarea id="aiWorkflowInput" placeholder="e.g., Show me how to add a new employee" class="w-full p-3 border rounded-md mb-4 h-24 focus:ring-2 focus:ring-green-500"></textarea><div class="flex justify-end items-center"><div class="space-x-3"><button id="cancelAICreateButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button><button id="generateAIWorkflowButton" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center justify-center">Generate</button></div></div></div>
+    <div id="runStepPopup" class="fixed bg-white p-6 rounded-lg shadow-2xl w-full max-w-sm popup-fade popup-hidden z-50 border-2 border-purple-500">
+        <div id="popupArrow" class="popup-arrow"></div>
+        <h3 class="text-xl font-semibold mb-2 text-gray-700">Workflow Step</h3>
+        <div id="runStepInfo" class="text-sm text-gray-500 mb-3">Step X of Y</div>
+        <div id="runStepHelpText" class="bg-gray-100 p-4 rounded-md mb-4 min-h-[60px]">Help text...</div>
+        <div class="flex justify-end space-x-3">
+            <button id="endWorkflowRunButton" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">End Workflow</button>
+            <button id="nextStepButton" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">Next Step</button>
+        </div>
+    </div>
+    <div id="nextStepChoicePopup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-indigo-500">
+        <h3 class="text-xl font-semibold mb-4 text-gray-700">Step Added!</h3>
+        <p class="text-gray-600 mb-6">What would you like to do next?</p>
+        <div class="flex justify-end space-x-3">
+            <button id="finishFromChoiceButton" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Finish Workflow</button>
+            <button id="addAnotherStepButton" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add Next Step</button>
+        </div>
+    </div>
+    <div id="customModalOverlay" class="custom-modal-overlay"><div class="custom-modal"><h3 id="customModalTitle"></h3><p id="customModalMessage"></p><div class="flex justify-end space-x-2 mt-4"><button id="customModalCancelButton" class="cancel-button">Cancel</button><button id="customModalConfirmButton" class="confirm-button">OK</button></div></div></div>
+    
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', () => { 
             let currentWorkflowId = null, currentWorkflowName = '', currentStepNumber = 1, isElementSelectionMode = false, highlightedElementForSelection = null;
             let runningWorkflowData = null, currentRunningStepIndex = 0, highlightedElementForRunning = null;
 
@@ -151,6 +354,7 @@
             const workflowDropdownButton = document.getElementById('workflowDropdownButton');
             const workflowDropdownPanel = document.getElementById('workflowDropdownPanel');
             const createNewWorkflowLink = document.getElementById('createNewWorkflow');
+            const createWithAI = document.getElementById('createWithAI');
             const availableWorkflowsListDiv = document.getElementById('availableWorkflowsList');
             
             // Popups
@@ -174,6 +378,11 @@
             const nextStepChoicePopup = document.getElementById('nextStepChoicePopup');
             const finishFromChoiceButton = document.getElementById('finishFromChoiceButton');
             const addAnotherStepButton = document.getElementById('addAnotherStepButton');
+
+            const aiCreatePopup = document.getElementById('aiCreatePopup');
+            const aiWorkflowInput = document.getElementById('aiWorkflowInput');
+            const cancelAICreateButton = document.getElementById('cancelAICreateButton');
+            const generateAIWorkflowButton = document.getElementById('generateAIWorkflowButton');
             
             // New User Page Elements
             const createUserForm = document.getElementById('createUserForm');
@@ -219,6 +428,7 @@
             }
 
             function fadeOut(element, callback) {
+                document.body.classList.remove('popup-active');
                 return new Promise(resolve => {
                     element.style.opacity = '0';
                     setTimeout(() => {
@@ -233,6 +443,7 @@
             function fadeIn(element, isPopup = true) {
                  return new Promise(resolve => {
                     if (isPopup) {
+                        document.body.classList.add('popup-active');
                         element.style.opacity = '0';
                     }
                     element.classList.remove('popup-hidden');
@@ -244,10 +455,14 @@
                 });
             }
             
-            async function showWorkflowNamePopup() { await fadeOut(mainScreen); await fadeIn(workflowNamePopup); workflowNameInput.focus(); }
-            async function hideWorkflowNamePopup() { await fadeOut(workflowNamePopup); await fadeIn(mainScreen, false); }
-            async function showHelpTextPopup(elementPath) { await fadeOut(mainScreen); helpTextInput.value = ''; selectedElementPathDiv.textContent = `Element: ${elementPath.substring(0,50)}...`; await fadeIn(helpTextPopup); helpTextInput.focus(); }
+            async function showWorkflowNamePopup() { await fadeIn(workflowNamePopup); workflowNameInput.focus(); }
+            async function hideWorkflowNamePopup() { await fadeOut(workflowNamePopup); }
+            async function showHelpTextPopup(elementPath) { helpTextInput.value = ''; selectedElementPathDiv.textContent = `Element: ${elementPath.substring(0,50)}...`; await fadeIn(helpTextPopup); helpTextInput.focus(); }
             async function hideHelpTextPopup() { await fadeOut(helpTextPopup); }
+            
+            async function showAICreatePopup() { await fadeIn(aiCreatePopup); aiWorkflowInput.focus(); }
+            async function hideAICreatePopup() { await fadeOut(aiCreatePopup); }
+
 
             async function showRunStepPopup(stepText, currentStep, totalSteps, highlightedElement) {
                 runStepHelpText.textContent = stepText;
@@ -367,55 +582,55 @@
 
             // --- Dashboard Logic ---
             function renderDashboard() {
-                // Employee Stats
-                const users = getUsersFromStorage();
-                document.getElementById('totalEmployees').textContent = users.length;
-                const maleCount = users.filter(u => u.gender === 'Male').length;
-                const femaleCount = users.filter(u => u.gender === 'Female').length;
-                document.getElementById('gentsCount').textContent = maleCount;
-                document.getElementById('ladiesCount').textContent = femaleCount;
+                setTimeout(() => {
+                    const users = getUsersFromStorage();
+                    document.getElementById('totalEmployees').textContent = users.length;
+                    const maleCount = users.filter(u => u.gender === 'Male').length;
+                    const femaleCount = users.filter(u => u.gender === 'Female').length;
+                    document.getElementById('gentsCount').textContent = maleCount;
+                    document.getElementById('ladiesCount').textContent = femaleCount;
 
-                // Sales Stats
-                const totalSales = 2845000;
-                document.getElementById('totalSales').textContent = `$${(totalSales / 1000000).toFixed(2)}M`;
-                document.getElementById('income').textContent = `$${(totalSales * 0.4).toLocaleString()}`;
-                document.getElementById('profitMargin').textContent = `22%`;
-                document.getElementById('ebidta').textContent = `$${(totalSales * 0.3).toLocaleString()}`;
+                    const totalSales = 2845000;
+                    document.getElementById('totalSales').textContent = `$${(totalSales / 1000000).toFixed(2)}M`;
+                    document.getElementById('income').textContent = `$${(totalSales * 0.4).toLocaleString()}`;
+                    document.getElementById('profitMargin').textContent = `22%`;
+                    document.getElementById('ebidta').textContent = `$${(totalSales * 0.3).toLocaleString()}`;
 
-                // Monthly Sales Chart
-                const monthlySalesCtx = document.getElementById('monthlySalesChart').getContext('2d');
-                if (monthlySalesChart) monthlySalesChart.destroy();
-                monthlySalesChart = new Chart(monthlySalesCtx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                        datasets: [{
-                            label: 'Sales',
-                            data: [120000, 190000, 300000, 500000, 200000, 300000],
-                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                            borderColor: 'rgba(59, 130, 246, 1)',
-                            borderWidth: 1,
-                            tension: 0.4
-                        }]
-                    },
-                    options: { scales: { y: { beginAtZero: true } } }
-                });
+                    const monthlySalesCtx = document.getElementById('monthlySalesChart');
+                    if (!monthlySalesCtx) return; // defensive check
+                    if (monthlySalesChart) monthlySalesChart.destroy();
+                    monthlySalesChart = new Chart(monthlySalesCtx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                            datasets: [{
+                                label: 'Sales',
+                                data: [120000, 190000, 300000, 500000, 200000, 300000],
+                                backgroundColor: 'rgba(37, 201, 162, 0.2)',
+                                borderColor: 'rgba(37, 201, 162, 1)',
+                                borderWidth: 2,
+                                tension: 0.4
+                            }]
+                        },
+                        options: { scales: { y: { beginAtZero: true } } }
+                    });
 
-                // Sales by Geography Chart
-                const salesByGeoCtx = document.getElementById('salesByGeoChart').getContext('2d');
-                if (salesByGeoChart) salesByGeoChart.destroy();
-                salesByGeoChart = new Chart(salesByGeoCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['NA', 'EMEA', 'APAC', 'LATAM'],
-                        datasets: [{
-                            label: 'Sales by Geography',
-                            data: [1200000, 850000, 550000, 245000],
-                            backgroundColor: ['#3b82f6', '#10b981', '#f97316', '#ef4444'],
-                        }]
-                    },
-                    options: { scales: { y: { beginAtZero: true } } }
-                });
+                    const salesByGeoCtx = document.getElementById('salesByGeoChart');
+                     if (!salesByGeoCtx) return; // defensive check
+                    if (salesByGeoChart) salesByGeoChart.destroy();
+                    salesByGeoChart = new Chart(salesByGeoCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['NA', 'EMEA', 'APAC', 'LATAM'],
+                            datasets: [{
+                                label: 'Sales by Geography',
+                                data: [1200000, 850000, 550000, 245000],
+                                backgroundColor: ['#2a7b9b', '#25c9a2', '#0ab6ce', '#f97316'],
+                            }]
+                        },
+                        options: { scales: { y: { beginAtZero: true } } }
+                    });
+                }, 0);
             }
 
             // --- User Management Logic ---
@@ -423,20 +638,23 @@
                 const users = getUsersFromStorage();
                 userListBody.innerHTML = '';
                 if(users.length === 0) {
-                    userListBody.innerHTML = `<tr><td colspan="4" class="text-center text-gray-500 py-4">No users found. Add one using the form above.</td></tr>`;
+                    userListBody.innerHTML = `<tr><td colspan="7" class="text-center text-gray-500 py-4">No users found. Add one using the form above.</td></tr>`;
                     return;
                 }
                 users.forEach(user => {
                     const row = document.createElement('tr');
-                    const maskedContact = user.contact ? `******${user.contact.slice(-4)}` : '';
+                    const maskedContact = user.phone ? `******${user.phone.slice(-4)}` : '';
                     row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${user.code}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${user.empId}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.technology}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.experience}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <span class="contact-number" data-full-number="${user.contact}">${maskedContact}</span>
-                            ${user.contact ? `<button class="ml-2 text-blue-600 hover:text-blue-800 text-xs font-semibold toggle-contact">[Show]</button>` : ''}
+                            <span class="contact-number" data-full-number="${user.phone}">${maskedContact}</span>
+                            ${user.phone ? `<button class="ml-2 text-blue-600 hover:text-blue-800 text-xs font-semibold toggle-contact">[Show]</button>` : ''}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.email}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.city}, ${user.country}</td>
                     `;
                     userListBody.appendChild(row);
                 });
@@ -446,10 +664,14 @@
                 event.preventDefault();
                 const form = event.target;
                 const newUser = {
-                    code: form.empCode.value,
                     name: form.empName.value,
-                    contact: form.empContact.value,
                     email: form.empEmail.value,
+                    phone: form.empPhone.value,
+                    empId: form.empId.value,
+                    technology: form.empTechnology.value,
+                    experience: form.empExperience.value,
+                    country: form.empCountry.value,
+                    city: form.empCity.value,
                     gender: form.empGender.value
                 };
                 
@@ -825,7 +1047,7 @@
                 const prompt = `Generate a very short, one-sentence help text for a workflow tutorial. The user needs to interact with a ${elementType}. The help text should be a clear instruction. For example, if it's a "Save" button, suggest something like "Click here to save your changes."`;
 
                 suggestHelpTextButton.disabled = true;
-                suggestHelpTextButton.innerHTML = `<svg class="animate-spin h-5 w-5 mr-3 text-yellow-800" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Thinking...`;
+                suggestHelpTextButton.innerHTML = `<svg class="animate-spin h-5 w-5 mr-3 text-yellow-800" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Suggesting...`;
 
                 try {
                     let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
@@ -906,184 +1128,13 @@
                 }
             });
             
-            document.addEventListener('DOMContentLoaded', () => { 
-                showPage('home');
-                fetchAndDisplayWorkflows(); 
-                ['workflowNamePopup', 'helpTextPopup', 'runStepPopup', 'nextStepChoicePopup'].forEach(id => document.getElementById(id).classList.add('popup-hidden')); 
+            showPage('home');
+            fetchAndDisplayWorkflows(); 
+            ['workflowNamePopup', 'helpTextPopup', 'runStepPopup', 'nextStepChoicePopup', 'aiCreatePopup'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.add('popup-hidden');
             });
-        </script>
-        
-        <div id="appContainer" class="flex-grow flex flex-col">
-            <!-- Header -->
-            <header class="bg-white text-gray-800 shadow-md sticky top-0 z-40 flex-shrink-0">
-                <div class="flex items-center justify-between h-[50px] px-4">
-                    <h1 class="text-xl font-bold text-blue-600">APG Hackathon - DEMO</h1>
-                    <div class="relative">
-                        <button id="workflowDropdownButton" class="flex items-center space-x-2 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-md transition">
-                            <span>Workflows</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        <div id="workflowDropdownPanel" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 py-1 z-50">
-                            <a href="#" id="createNewWorkflow" class="dropdown-item font-semibold text-blue-600">Create New Workflow</a>
-                            <hr class="my-1"/>
-                            <div id="availableWorkflowsList" class="max-h-60 overflow-y-auto">
-                               <div class="px-4 py-2 text-sm text-gray-500">Loading...</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Main Screen Content -->
-            <main id="mainScreen" class="flex-grow p-6 main-screen-fade opacity-100 bg-gray-100">
-                <div id="home" class="page-view bg-white p-8 rounded-lg shadow-xl">
-                    <h2 class="text-3xl font-semibold mb-6 text-gray-700">Dashboard</h2>
-                    <!-- Employee Overview -->
-                    <section class="mb-8">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Employee Overview</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                            <div class="bg-blue-100 p-4 rounded-lg shadow text-center">
-                                <p class="text-sm text-blue-800 font-semibold">Total Employees</p>
-                                <p id="totalEmployees" class="text-3xl font-bold text-blue-900">0</p>
-                            </div>
-                            <div class="bg-pink-100 p-4 rounded-lg shadow text-center">
-                                <p class="text-sm text-pink-800 font-semibold">Ladies</p>
-                                <p id="ladiesCount" class="text-3xl font-bold text-pink-900">0</p>
-                            </div>
-                            <div class="bg-indigo-100 p-4 rounded-lg shadow text-center">
-                                <p class="text-sm text-indigo-800 font-semibold">Gents</p>
-                                <p id="gentsCount" class="text-3xl font-bold text-indigo-900">0</p>
-                            </div>
-                            <div class="bg-green-100 p-4 rounded-lg shadow text-center">
-                                <p class="text-sm text-green-800 font-semibold">Avg. Experience</p>
-                                <p class="text-3xl font-bold text-green-900">4.2 yrs</p>
-                            </div>
-                        </div>
-                    </section>
-                    
-                    <!-- Sales Dashboard -->
-                    <section>
-                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Sales Dashboard</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                             <div class="bg-gray-100 p-4 rounded-lg shadow text-center">
-                                <p class="text-sm text-gray-600 font-semibold">Total Sales</p>
-                                <p id="totalSales" class="text-2xl font-bold text-gray-900">$0</p>
-                            </div>
-                             <div class="bg-gray-100 p-4 rounded-lg shadow text-center">
-                                <p class="text-sm text-gray-600 font-semibold">Income</p>
-                                <p id="income" class="text-2xl font-bold text-gray-900">$0</p>
-                            </div>
-                             <div class="bg-gray-100 p-4 rounded-lg shadow text-center">
-                                <p class="text-sm text-gray-600 font-semibold">Profit Margin</p>
-                                <p id="profitMargin" class="text-2xl font-bold text-gray-900">0%</p>
-                            </div>
-                             <div class="bg-gray-100 p-4 rounded-lg shadow text-center">
-                                <p class="text-sm text-gray-600 font-semibold">EBITDA</p>
-                                <p id="ebidta" class="text-2xl font-bold text-gray-900">$0</p>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <div class="bg-white p-4 rounded-lg shadow">
-                                <h4 class="font-semibold mb-2">Monthly Sales</h4>
-                                <canvas id="monthlySalesChart"></canvas>
-                            </div>
-                            <div class="bg-white p-4 rounded-lg shadow">
-                                <h4 class="font-semibold mb-2">Sales by Geography</h4>
-                                <canvas id="salesByGeoChart"></canvas>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-
-                <div id="users" class="page-view hidden bg-white p-8 rounded-lg shadow-xl">
-                     <h2 class="text-3xl font-semibold mb-6 text-gray-700">User Management</h2>
-
-                    <!-- Create User Form -->
-                    <div class="bg-gray-50 p-6 rounded-lg border mb-8">
-                        <h3 class="text-xl font-medium mb-4">Create New Employee</h3>
-                        <form id="createUserForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-end">
-                            <div class="col-span-1">
-                                <label for="empCode" class="block text-sm font-medium text-gray-700">Emp Code</label>
-                                <input type="text" id="empCode" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                            </div>
-                            <div class="col-span-1">
-                                <label for="empName" class="block text-sm font-medium text-gray-700">Full Name</label>
-                                <input type="text" id="empName" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                            </div>
-                            <div class="col-span-1">
-                                <label for="empContact" class="block text-sm font-medium text-gray-700">Contact</label>
-                                <input type="tel" id="empContact" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                            </div>
-                             <div class="col-span-1">
-                                <label for="empGender" class="block text-sm font-medium text-gray-700">Gender</label>
-                                <select id="empGender" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                    <option>Male</option>
-                                    <option>Female</option>
-                                </select>
-                            </div>
-                            <div class="col-span-1">
-                                <label for="empEmail" class="block text-sm font-medium text-gray-700">Email ID</label>
-                                <input type="email" id="empEmail" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                            </div>
-                            <div class="col-span-1">
-                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Add Employee</button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- Users List -->
-                    <h3 class="text-xl font-medium mb-4">Employee List</h3>
-                    <div class="overflow-x-auto bg-white rounded-lg shadow">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee Code</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                </tr>
-                            </thead>
-                            <tbody id="userListBody" class="bg-white divide-y divide-gray-200">
-                                <!-- User rows will be inserted here by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div id="products" class="page-view hidden bg-white p-8 rounded-lg shadow-xl">
-                     <h2 class="text-3xl font-semibold mb-6 text-gray-700">Products Page</h2>
-                     <p class="text-gray-600">This is where product information would go.</p>
-                </div>
-                <div id="settings" class="page-view hidden bg-white p-8 rounded-lg shadow-xl">
-                     <h2 class="text-3xl font-semibold mb-6 text-gray-700">Settings Page</h2>
-                     <p class="text-gray-600">This is where application settings would go.</p>
-                </div>
-
-            </main>
-        </div>
-    </div>
-
-    <!-- POPUPS -->
-    <div id="workflowNamePopup" class="fixed bottom-6 right-6 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-blue-500"><h3 class="text-xl font-semibold mb-4 text-gray-700">Create New Workflow</h3><input type="text" id="workflowNameInput" placeholder="Enter Workflow Name" class="w-full p-3 border rounded-md mb-4 focus:ring-2 focus:ring-blue-500"><div class="flex justify-end space-x-3"><button id="cancelWorkflowNameButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button><button id="saveWorkflowNameButton" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Save & Start</button></div></div>
-    <div id="helpTextPopup" class="fixed bottom-6 right-6 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-green-500"><h3 class="text-xl font-semibold mb-2 text-gray-700">Add Help Text for Step</h3><div id="selectedElementPath" class="text-xs text-gray-500 mb-3 break-all">Element: ...</div><textarea id="helpTextInput" placeholder="Enter Help Text" class="w-full p-3 border rounded-md mb-4 h-24 focus:ring-2 focus:ring-green-500"></textarea><div class="flex justify-between items-center"><button id="suggestHelpTextButton" class="px-4 py-2 bg-yellow-400 text-yellow-800 rounded-md hover:bg-yellow-500 transition font-semibold flex items-center justify-center">✨ Suggest Text</button><div class="space-x-3"><button id="cancelHelpTextButton" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button><button id="addHelpTextButton" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add Step</button></div></div></div>
-    <div id="runStepPopup" class="fixed bg-white p-6 rounded-lg shadow-2xl w-full max-w-sm popup-fade popup-hidden z-50 border-2 border-purple-500">
-        <div id="popupArrow" class="popup-arrow"></div>
-        <h3 class="text-xl font-semibold mb-2 text-gray-700">Workflow Step</h3>
-        <div id="runStepInfo" class="text-sm text-gray-500 mb-3">Step X of Y</div>
-        <div id="runStepHelpText" class="bg-gray-100 p-4 rounded-md mb-4 min-h-[60px]">Help text...</div>
-        <div class="flex justify-end space-x-3">
-            <button id="endWorkflowRunButton" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">End Workflow</button>
-            <button id="nextStepButton" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">Next Step</button>
-        </div>
-    </div>
-    <div id="nextStepChoicePopup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-2xl w-full max-w-md popup-fade popup-hidden z-50 border-2 border-indigo-500">
-        <h3 class="text-xl font-semibold mb-4 text-gray-700">Step Added!</h3>
-        <p class="text-gray-600 mb-6">What would you like to do next?</p>
-        <div class="flex justify-end space-x-3">
-            <button id="finishFromChoiceButton" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Finish Workflow</button>
-            <button id="addAnotherStepButton" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add Next Step</button>
-        </div>
-    </div>
-    <div id="customModalOverlay" class="custom-modal-overlay"><div class="custom-modal"><h3 id="customModalTitle"></h3><p id="customModalMessage"></p><div class="flex justify-end space-x-2 mt-4"><button id="customModalCancelButton" class="cancel-button">Cancel</button><button id="customModalConfirmButton" class="confirm-button">OK</button></div></div></div>
-
+        });
+    </script>
 </body>
 </html>
